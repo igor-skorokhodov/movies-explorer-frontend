@@ -1,12 +1,12 @@
-export const BASE_URL = "https://api.mesto.ivladsk.nomoredomains.club";
+export const BASE_URL = "https://api.ivladsk.nomoredomains.club";
 
-export const register = (email, password) => {
+export const register = (name, email, password) => {
   return fetch(`${BASE_URL}/signup`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ email, password }),
+    body: JSON.stringify({ name, email, password }),
     credentials: "include",
   }).then(checkResponse);
 };
@@ -22,18 +22,17 @@ export const authorize = (email, password) => {
   }).then(checkResponse);
 };
 
-export const getContent = (token, id) => {
+export const getContent = (token) => {
   return fetch(`${BASE_URL}/users/me`, {
     method: "GET",
     headers: {
       Accept: "application/json",
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
-      userId: id,
     },
     credentials: "include",
   }).then(checkResponse);
 };
 
 const checkResponse = (res) =>
-  res.ok ? res.json() : Promise.reject(`Ошибка: ${res.statusText}`);
+  res.ok ? res.json() : Promise.reject(`Ошибка: ${res.status}`);

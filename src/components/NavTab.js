@@ -1,9 +1,9 @@
-function NavTab() {
+function NavTab(props) {
   return (
     <section className="navtab">
-      <a className="navtab__button">О проекте</a>
-      <a className="navtab__button">Технологии</a>
-      <a className="navtab__button">Студент</a>
+      <a className="navtab__button" href={`#${props.project}`}>О проекте</a>
+      <a className="navtab__button" href={`#${props.tech}`}>Технологии</a>
+      <a className="navtab__button" href={`#${props.student}`}>Студент</a>
     </section>
   );
 }

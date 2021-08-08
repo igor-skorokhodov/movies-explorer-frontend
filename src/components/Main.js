@@ -1,5 +1,4 @@
 import React from "react";
-import { UserInfoContext } from "../contexts/CurrentUserContext.js";
 import Header from "../components/Header.js";
 import Footer from "../components/Footer.js";
 import Promo from "../components/Promo.js";
@@ -7,9 +6,17 @@ import NavTab from "../components/NavTab.js";
 import AboutProject from "../components/AboutProject.js";
 import Techs from "../components/Techs.js";
 import AboutMe from "../components/AboutMe.js";
+import { Route, Switch, useHistory, Redirect } from "react-router-dom";
 
 function Main(props) {
-  const currentUser = React.useContext(UserInfoContext);
+  React.useEffect(() => {
+    props.setRoute("main");
+  }, []);
+
+  const project = "project";
+  const tech = "tech";
+  const student = "student";
+
   return (
     <>
       <Header
@@ -19,12 +26,12 @@ function Main(props) {
         email={props.email}
         loggedIn={props.loggedIn}
         name="Выйти"
-        signOut={props.signOut}
-        tip="signOut"
+        isButtonClicked={props.isButtonClicked}
+        headerButtonClicked={props.headerButtonClicked}
       />
       <main className="content">
         <Promo />
-        <NavTab />
+        <NavTab project={project} tech={tech} student={student} />
         <AboutProject />
         <Techs />
         <AboutMe />

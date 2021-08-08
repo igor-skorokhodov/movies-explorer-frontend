@@ -1,10 +1,8 @@
 import FormErrors from "./FormErrors.js";
 import LogRegForm from "./LogRegForm.js";
 import React from "react";
-import { useHistory, Redirect } from "react-router-dom";
 
 function Login(props) {
-  const history = useHistory();
 
   const [data, setData] = React.useState({
     email: "",
@@ -22,23 +20,13 @@ function Login(props) {
     );
   }
 
-  props.setRoute("login");
-
   function handleSubmit(e) {
     e.preventDefault();
     if (!data.email || !data.password) {
       return;
     }
-    props.setEmail(data.email);
     props.authorize(data.email, data.password);
     setData({ email: "", password: "" });
-  }
-
-  function signUp() {
-    history.push("/sign-in");
-  }
-  function signIn() {
-    history.push("/sign-up");
   }
 
   return (

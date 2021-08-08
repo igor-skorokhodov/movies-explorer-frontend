@@ -40,7 +40,11 @@ function LogRegForm(props) {
               ? "Еще не зарегистрированы?"
               : ""}
           </p>
-          <Link to="/signin" className="logreg__link logreg__link_green">
+          <Link to={props.route === "register"
+              ? "/signin"
+              : props.route === "login"
+              ? "/signup"
+              : ""} className="logreg__link logreg__link_green">
           {props.route === "register"
               ? "Войти"
               : props.route === "login"

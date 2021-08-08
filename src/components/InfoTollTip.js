@@ -4,18 +4,21 @@ import error from "../images/krestik.svg";
 import { useHistory } from "react-router-dom";
 
 function InfoToolTip(props) {
+
   const history = useHistory();
 
   function closeInfoToolTip() {
     props.setOpen(false);
+    props.setError(false);
   }
 
   React.useEffect(() => {
     function handleClick(evt) {
       if (evt.target.classList.contains("infotooltip_active")) {
         props.setOpen(false);
+        props.setError(false);
         if (props.registeredIn) {
-          history.push("/sign-in");
+          history.push("/movies");
         }
       }
     }
@@ -23,8 +26,9 @@ function InfoToolTip(props) {
     function handleOnKeyDown(evt) {
       if (evt.key === "Escape") {
         props.setOpen(false);
+        props.setError(false);
         if (props.registeredIn) {
-          history.push("/sign-in");
+          history.push("/movies");
         }
       }
     }
@@ -60,6 +64,7 @@ function InfoToolTip(props) {
                 : "такой пользователь уже существует")
           }
         ></img>
+        {console.log(props.registeredIn)}
         <p className="infotooltip__text">
           {(props.regError
             ? "такой пользователь уже существует"

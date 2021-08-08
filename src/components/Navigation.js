@@ -14,10 +14,6 @@ function Navigation(props) {
     isInProfile ? "navigation__button_current" : ""
   }`;
 
-  const navigationButtonMain = `navigation__button ${
-    isInMain ? "navigation__button_current" : ""
-  }`;
-
   const navigationButtonMovies = `navigation__button ${
     isInMovies ? "navigation__button_current" : ""
   }`;
@@ -25,36 +21,28 @@ function Navigation(props) {
   const navigationButtonSavedMovies = `navigation__button
     ${isInSavedMovies ? "navigation__button_current" : ""}`;
 
-  function compareTips() {
-    if (props.tip === "signOut") {
-      props.signOut();
-    }
-    if (props.tip === "register") {
-      props.signUp();
-    }
-    if (props.tip === "login") {
-      props.signIn();
-    }
-  }
-
   function closeButtonIsCliked() {
     props.isButtonClicked("false");
   }
 
   function redirectToMovies() {
     history.push("/movies");
+    props.isButtonClicked("false");
   }
 
   function redirectToSavedMovies() {
     history.push("/saved-movies");
+    props.isButtonClicked("false");
   }
 
   function redirectToProfile() {
     history.push("/profile");
+    props.isButtonClicked("false");
   }
 
   function redirectToMain() {
     history.push("/");
+    props.isButtonClicked("false");
   }
 
   return (

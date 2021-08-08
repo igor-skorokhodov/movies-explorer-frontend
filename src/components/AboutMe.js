@@ -4,10 +4,10 @@ import Arrow from "../images/arrow.svg";
 function AboutMe() {
   return (
     <section className="aboutme">
-      <h1 className="aboutproject__main-header">Студент</h1>
+      <h1 className="aboutproject__main-header" id="student">Студент</h1>
       <div className="aboutme__container">
-        <h1 className="aboutme__header">Виталий</h1>
-        <h2 className="aboutme__subheader">Фронтенд-разработчик, 30 лет</h2>
+        <h1 className="aboutme__header">Игорь</h1>
+        <h2 className="aboutme__subheader">Фронтенд-разработчик, 35 лет</h2>
         <p className="aboutme__text">
           Я родился и живу в Саратове, закончил факультет экономики СГУ. У меня
           есть жена и дочь. Я люблю слушать музыку, а ещё увлекаюсь бегом.

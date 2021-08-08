@@ -1,7 +1,6 @@
 import LogRegForm from "./LogRegForm.js";
 import FormErrors from "./FormErrors.js";
 import React from "react";
-import { useHistory } from "react-router-dom";
 import InfoToolTip from "./InfoTollTip.js";
 
 function Register(props) {
@@ -12,9 +11,6 @@ function Register(props) {
   });
 
   const [isOpen, setIsOpen] = React.useState(false);
-  const history = useHistory();
-
-  props.setRoute("register");
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -30,19 +26,7 @@ function Register(props) {
   function handleSubmit(e) {
     e.preventDefault();
     setIsOpen(true);
-    if (!data.email || !data.password) {
-      return;
-    }
-
-    props.register(data.email, data.password);
-  }
-
-  function signUp() {
-    history.push("/sign-in");
-  }
-
-  function signIn() {
-    history.push("/sign-up");
+    props.register(data.name, data.email, data.password);
   }
 
   return (
@@ -51,6 +35,8 @@ function Register(props) {
         isOpen={isOpen}
         setOpen={setIsOpen}
         registeredIn={props.registeredIn}
+        regError={props.regError}
+        setError={props.setError}
       />
       <LogRegForm
         className="logreg__container"
@@ -94,6 +80,7 @@ function Register(props) {
         />
         <FormErrors formErrors={props.validity.formErrors.password} input="name" />
       </LogRegForm>
+
     </>
   );
 }

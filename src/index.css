@@ -51,6 +51,7 @@
 @import url(./blocks/searchform/searchform.css);
 @import url(./blocks/searchform/__text/searchform__text.css);
 @import url(./blocks/searchform/__switch/_active/searchform__switch_active.css);
+@import url(./blocks/searchform/__switch/_inactive/searchform__switch_inactive.css);
 @import url(./blocks/searchform/__switch/searchform__switch.css);
 @import url(./blocks/searchform/__container/_border-buttom/searchform__container_border-buttom.css);
 @import url(./blocks/searchform/__container/searchform__container.css);
@@ -59,8 +60,10 @@
 @import url(./blocks/searchform/__button/_green/searchform__button_green.css);
 @import url(./blocks/searchform/__button/_bright/searchform__button_bright.css);
 @import url(./blocks/searchform/__input/searchform__input.css);
+@import url(./blocks/searchform/__form/searchform__form.css);
 @import url(./blocks/searchform/__button/_bright/_invisible/searchform__button_bright_invisible.css);
 @import url(./blocks/preloader/Preloader.css);
+@import url(./blocks/preloader/_visible/Preloader_visible.css);
 @import url(./blocks/moviescardlist/moviescardlist.css);
 @import url(./blocks/moviescardlist/__button/moviescardlist__button.css);
 @import url(./blocks/moviescardlist/__button/_invisible/moviescardlist__button_invisible.css);
@@ -127,5 +130,8 @@
 @import url(./blocks/infotooltip/__text/infotooltip__text.css);
 @import url(./blocks/infotooltip/__pic/infotooltip__pic.css);
 @import url(./blocks/infotooltip/__container/infotooltip__container.css);
+@import url(./blocks/popup/__close-button/popup__close-button.css);
+@import url(./blocks/popup/__close-button/_position/popup__close-button_position-add.css);
+@import url(./blocks/popup/__close-button/_delete/popup__close_delete.css);
 
 

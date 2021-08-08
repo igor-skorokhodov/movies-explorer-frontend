@@ -1,8 +1,9 @@
 .searchform__switch {
     width: 36px;
     height: 20px;
-    background: transparent;
-    background-position: center;
+    background-color: Transparent;
+    background-repeat:no-repeat;
     border: none;
-    background-image: url('../../../images/switch_button_nonactive.svg');
+    cursor:pointer;
+    overflow: hidden; 
 }

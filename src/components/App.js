@@ -6,35 +6,40 @@ import Navigation from "../components/Navigation.js";
 import Profile from "../components/Profile.js";
 import Error404 from "../components/Error404.js";
 import React from "react";
-import api from "../utils/api.js";
-import { UserInfoContext } from "../contexts/CurrentUserContext.js";
+import mainApi from "../utils/MainApi.js";
+import moviesApi from "../utils/MoviesApi.js";
+import { CurrentUserContext } from "../contexts/CurrentUserContext.js";
 import { Route, Switch, useHistory, Redirect } from "react-router-dom";
 import Login from "./Login.js";
 import Register from "./Register.js";
 import ProtectedRoute from "./ProtectedRoute.js";
 import * as auth from "../utils/auth.js";
-import SearchForm from "../components/SearchForm.js";
+import Preloader from "./Preloader";
 
 function App() {
   const [headerButtonClicked, isHeaderButtonClicked] = React.useState(false);
-  const [selectedCard, setSelectedCard] = React.useState({
-    name: "",
-    link: "",
-  });
   const [currentUser, setCurrentUser] = React.useState({
     name: "",
-    about: "",
-    avatar: "",
+    email: "",
     id: "",
   });
-  const [cards, setCards] = React.useState([]);
+  const [demand, setDemand] = React.useState("");
+  const [searchWords, setSearchWords] = React.useState("");
+  const [check, setCheck] = React.useState('');
+  const [movies, setMovies] = React.useState([]);
+  const [savedMovies, setSavedMovies] = React.useState([]);
+  const [shortMovies, setShortMovies] = React.useState([]);
   const [loggedIn, setLoggedIn] = React.useState(false);
-  const [email, setEmail] = React.useState("");
+  const [loading, isLoading] = React.useState(false);
   const [width, setWidth] = React.useState(0);
+  const [array, setArray] = React.useState([]);
+  const [array2, setArray2] = React.useState([]);
+  const [array3, setArray3] = React.useState([]);
   const [err, setErr] = React.useState(false);
   const history = useHistory();
   const [registeredIn, isRegisteredIn] = React.useState(false);
   const [route, setRoute] = React.useState("");
+  const [trig, setTrig] = React.useState(0);
   const [validity, setValidity] = React.useState({
     formErrors: { email: "", password: "", name: "" },
     emailValid: false,
@@ -43,10 +48,51 @@ function App() {
     formValidLog: false,
     nameValid: false,
   });
+  let index = 0;
+  let columns = 0;
+  let rounds = 0;
 
   React.useEffect(() => {
-    document.title = "Movies explorer";
+    function handleClick(evt) {
+      if (evt.target.classList.contains("navigation_visible")) {
+        isButtonClicked("false");
+      }
+    }
+
+    function handleOnKeyDown(evt) {
+      if (evt.key === "Escape") {
+        isButtonClicked("false");
+      }
+    }
+    document.addEventListener("keydown", handleOnKeyDown);
+    document.addEventListener("click", handleClick);
+    return () => {
+      document.removeEventListener("keydown", handleOnKeyDown);
+      document.removeEventListener("click", handleClick);
+    };
   });
+
+  React.useEffect(() => {
+    tokenCheck();
+  }, []);
+
+  React.useEffect(() => {
+    console.log('cc')
+    mainApi
+      .getMovies()
+      .then((movies1) => {
+        setArray3(movies1.filter((movie) => movie.owner === localStorage.getItem('id')))
+        localStorage.setItem(
+          "savedMovies",
+          JSON.stringify(
+            movies1.filter((movie) => movie.owner === localStorage.getItem('id'))
+          )
+        );
+      })
+      .catch((err) => {
+        console.log(`упс, возникла ошибка! ${err}`);
+      });
+  }, [check]);
 
   React.useEffect(() => {
     setWidth(window.innerWidth);
@@ -55,12 +101,91 @@ function App() {
     });
   }, []);
 
-  React.useEffect(() => {
-    tokenCheck(localStorage.getItem("id"));
-  }, []);
+  function onButtonClick() {
+    console.log(array)
+    console.log(array2)
+    console.log(movies)
+    if (array2.columns === 2) {
+      if (array2.rounds > 4) {
+        let j = 0;
+        for (let i = 0; i < array2.columns; i++) {
+          j = array2.index;
+          setArray2({
+            index: array2.index = array2.index + 2,
+            rounds: array2.rounds--,
+            columns: array2.columns,
+          });
+          setArray([movies[j + 1], movies[j], ...array]);
+        }
+      }
+    }
+    if (array2.columns >= 3) {
+      if (array2.rounds > 4) {
+        let j = 0;
+        for (let i = 0; i < array2.columns; i++) {
+          j = array2.index;
+          setArray2({
+            index: array2.index = array2.index + 3,
+            rounds: array2.rounds--,
+            columns: array2.columns,
+          });
+          setArray([movies[j + 2], movies[j + 1], movies[j], ...array]);
+        }
+      }
+    }
+    if (array2.columns === 1) {
+      if (array2.rounds > 4) {
+        let j = 0;
+        for (let i = 0; i < array2.columns + 1; i++) {
+          j = array2.index;
+          setArray2({
+            index: array2.index++,
+            rounds: array2.rounds - 2,
+            columns: array2.columns,
+          });
+          setArray([movies[j + 1], movies[j], ...array]);
+        }
+      }
+    }
+  }
 
-  function setCardsVers(arr) {
-    setCards(arr);
+  function addingNewCards(width, arr) {
+    if (arr === []) {
+      setArray([]);
+      return;
+    }
+    let containerWidth = 0;
+    let gapWidth = 0;
+    let cardWidth = 0;
+    let gap = 24;
+    if (width >= 1280) {
+      cardWidth = 364;
+      containerWidth = width * 0.91;
+    }
+    if (width >= 768 && width < 1280) {
+      cardWidth = 339;
+      containerWidth = width * 0.92;
+    }
+    if (width >= 320 && width < 768) {
+      cardWidth = 300;
+      containerWidth = width * 0.94;
+    }
+    gapWidth = (Math.trunc(containerWidth / cardWidth) - 1) * gap;
+    columns = Math.trunc((containerWidth - gapWidth) / cardWidth);
+    rounds = arr.length / columns;
+    if (rounds <= 4) {
+      setArray(arr);
+      setArray2({ rounds: rounds });
+    }
+    if (rounds > 4) {
+      let arr2 = [];
+      for (let i = 0; i < columns * 4; i++) {
+        index = i;
+        arr2[i] = arr[i];
+      }
+      setArray(arr2);
+      setArray2({ index: index, columns: columns, rounds: rounds });
+    }
   }
 
   function validateField(fieldName, value) {
@@ -71,6 +196,8 @@ function App() {
     let emailBoolean = false;
     switch (fieldName) {
       case "name":
+        const letters = /^[A-Za-zА-Яа-яё -]+$/;
+
         if (value.length <= 2) {
           nameValid = value.length <= 2;
           fieldValidationErrors.name = nameValid ? "имя слишком короткое" : "";
@@ -84,8 +211,14 @@ function App() {
           fieldValidationErrors.name = "";
         }
         if (value.length > 2 && value.length < 30) {
-          nameValid = false;
-          fieldValidationErrors.name = "";
+          if ((nameValid = value.match(letters))) {
+            nameValid = false;
+            fieldValidationErrors.name = "";
+          } else {
+            nameValid = true;
+            fieldValidationErrors.name =
+              "имя должно содержать только латиницу, кирилицу, пробел и дефис";
+          }
         }
         break;
       case "email":
@@ -123,30 +256,50 @@ function App() {
     });
   }
 
-  function isButtonClicked(arg) {
-    if (arg === "false") {
-      isHeaderButtonClicked(false);
-    }
-    if (arg === "true") {
-      isHeaderButtonClicked(true);
+  function likeMovie(movie) {
+    let i = 0;
+    let j = 0;
+    JSON.parse(localStorage.getItem("savedMovies")).forEach((savedMovie) => {
+      if (
+        savedMovie.movieId === movie.id ||
+        savedMovie.movieId === movie.movieId
+      ) {
+        i = 1;
+        mainApi
+          .removeMovie(savedMovie._id)
+          .then((res) => {
+            setCheck(res)
+          })
+          .catch((err) => {
+            console.log(`упс, возникла ошибка! ${err}`);
+          });
+
+      } 
+    });
+    if (i === 0 && j === 0) {
+      j = 1;
+      mainApi
+        .addMovie(movie, localStorage.getItem("id"))
+        .then((res) => {setCheck(res)})
+        .catch((err) => {
+          console.log(`упс, возникла ошибка! ${err}`);
+        });
+
     }
   }
 
-
-function handleUpdateUser({ name, about, id }) {
-    console.log(id);
-    api
-      .postUserInfo(name, about, id)
+  function handleUpdateUser(name, email) {
+    mainApi
+      .updateUserInfo(name, email)
       .then((res) => {
         setCurrentUser({
-          name: res.user.name,
-          about: res.user.about,
-          avatar: res.user.avatar,
-          id: res.user._id,
+          name: res.name,
+          email: res.email,
+          id: res.id,
         });
       })
       .catch((err) => {
-        console.log(`упс, возникла ошибка! ${err}}`);
+        console.log(`упс, возникла ошибка! ${err}`);
       });
   }
 
@@ -154,36 +307,93 @@ function handleUpdateUser({ name, about, id }) {
     setLoggedIn(true);
   }
 
-  function tokenCheck(id) {
+  function searchMovies() {
+    isLoading(true);
+    moviesApi
+      .getMovies()
+      .then((moviesList) => {
+        isLoading(false);
+        setMovies(
+          moviesList.filter((movie) => movie.nameRU.includes(searchWords))
+        );
+        if (route === "movies") {
+          localStorage.setItem(
+            "movies",
+            JSON.stringify(
+              moviesList.filter((movie) => {
+                return movie.nameRU.includes(searchWords);
+              })
+            )
+          );
+          addingNewCards(
+            width,
+            moviesList.filter((movie) => movie.nameRU.includes(searchWords))
+          );
+        }
+        if (route === "savedMovies") {
+          localStorage.setItem(
+            "savedMovies",
+            JSON.stringify(
+              savedMovies.filter((movie) => {
+                return movie.nameRU.includes(searchWords);
+              })
+            )
+          );
+          addingNewCards(
+            width,
+            savedMovies.filter((movie) => {
+              return movie.nameRU.includes(searchWords);
+            })
+          );
+        }
+      })
+      .catch((err) => {
+        console.log(`упс, возникла ошибка! ${err}`);
+      });
+  }
+
+  function tokenCheck() {
     const token = localStorage.getItem("token");
     if (token) {
       // проверим токен
       auth
-        .getContent(token, id)
+        .getContent(token)
         .then((res) => {
+          console.log(res);
           if (res) {
             setLoggedIn(true);
-            setEmail(res.user.email);
+            localStorage.setItem("loggedIn", true);
+            localStorage.setItem("id", res.id);
             setCurrentUser({
-              name: res.user.name,
-              about: res.user.about,
-              avatar: res.user.avatar,
-              id: res.user._id,
+              name: res.name,
+              email: res.email,
+              id: res.id,
             });
           }
         })
         .catch((err) => {
           console.log(`упс, возникла ошибка! ${err}`);
         });
-      api
-        .getAllCards()
+      moviesApi
+        .getMovies()
+        .then((data) => {})
+        .catch((err) => {
+          console.log(`упс, возникла ошибка! ${err}`);
+        });
+      mainApi
+        .getMovies()
         .then((data) => {
-          setCards(data);
+          localStorage.setItem(
+            "savedMovies",
+            JSON.stringify(
+              data.filter((movie) => movie.owner === localStorage.getItem('id'))
+            )
+          );
         })
         .catch((err) => {
-          console.log(`упс, возникла ошибка! ${err}}`);
+          console.log(`упс, возникла ошибка! ${err}`);
         });
-      history.push("/main");
+      // history.push("/movies");
     }
   }
 
@@ -193,15 +403,14 @@ function handleUpdateUser({ name, about, id }) {
       .then((data) => {
         if (data.token) {
           localStorage.setItem("token", data.token);
-          localStorage.setItem("id", data.user._id);
           handleLogin();
+          localStorage.setItem("loggedIn", true);
           setCurrentUser({
-            name: data.user.name,
-            about: data.user.about,
-            avatar: data.user.avatar,
-            id: data.user._id,
+            name: data.name,
+            email: data.email,
+            id: data.id,
           });
-          history.push("/main");
+          history.push("/movies");
         }
       })
       .catch((err) => {
@@ -209,12 +418,13 @@ function handleUpdateUser({ name, about, id }) {
       });
   }
 
-  function register(mail, password) {
+  function register(name, email, password) {
     auth
-      .register(mail, password)
+      .register(name, email, password)
       .then((data) => {
         if (data) {
           isRegisteredIn(true);
+          authorize(email, password);
         }
       })
       .catch((err) => {
@@ -227,108 +437,154 @@ function handleUpdateUser({ name, about, id }) {
   function signOut() {
     localStorage.removeItem("token");
     localStorage.removeItem("id");
+    localStorage.removeItem("movies");
+    localStorage.removeItem("savedMovies");
+    localStorage.removeItem("loggedIn");
     setLoggedIn(false);
-    setCurrentUser({ name: "", about: "", avatar: "", id: "" });
-    history.push("/sign-in");
-    setEmail("");
+    setCurrentUser({ name: "", email: "", id: "" });
+    history.push("/");
   }
 
   function signUp() {
-    history.push("/sign-in");
+    history.push("/signin");
   }
 
   function signIn() {
-    history.push("/sign-up");
+    history.push("/signup");
+  }
+
+  function isButtonClicked(click) {
+    if (click === "true") {
+      isHeaderButtonClicked(true);
+    }
+    if (click === "false") {
+      isHeaderButtonClicked(false);
+    }
   }
 
   return (
-    <UserInfoContext.Provider value={currentUser}>
+    <CurrentUserContext.Provider value={currentUser}>
       <div className="page">
         <Switch>
           <Route exact path="/">
             <Main
               route="main"
-              signIn={signIn}
-              signOut={signOut}
-              component={Main}
-              setSelectedCardOn={setSelectedCard}
-              card={selectedCard}
-              cards={cards}
-              signUp={signUp}
-              email={email}
               loggedIn={loggedIn}
-            />
-          </Route>
-          <Route exact path="/sign-up">
-            <Register
-              registeredIn={registeredIn}
-              register={register}
-              loggedIn={loggedIn}
-              handleLogin={handleLogin}
-              regError={err}
-            />
-          </Route>
-          <Route exact path="/sign-in">
-            <Login
-              handleLogin={handleLogin}
-              setEmail={setEmail}
-              authorize={authorize}
-            />
-          </Route>
-          <Route path="/movies">
-            <Movies
               setRoute={setRoute}
               isButtonClicked={isButtonClicked}
               headerButtonClicked={headerButtonClicked}
-              setCards={setCardsVers}
             />
           </Route>
-          <Route path="/saved-movies">
-            <SavedMovies
-              isButtonClicked={isButtonClicked}
+          <ProtectedRoute path="/movies"
+              component={Movies}
+              tokenCheck={tokenCheck}
               setRoute={setRoute}
-              setCards={setCardsVers}
+              isButtonClicked={isButtonClicked}
+              headerButtonClicked={headerButtonClicked}
+              searchMovies={searchMovies}
+              setWords={setSearchWords}
+              setDemand={setDemand}
+              movies={movies}
+              demand={demand}
+              searchWords={searchWords}
+              buttonClick={onButtonClick}
+              array={array}
+              array2={array2}
+              likeMovie={likeMovie}
+              addingNewCards={addingNewCards}
+              shortMovies={shortMovies}
+              setShortMovies={setShortMovies}
+              width={width}
+              savedMovies={JSON.parse(localStorage.getItem("savedMovies"))}
+              setMovies={setMovies}
+              setArray={setArray}
+              loggedIn={loggedIn}
+              check={check}
+              array3={array3}
+              trig={trig}
+              setTrig={setTrig}
             />
-          </Route>
-          <Route path="/profile">
-            <Profile
+          <ProtectedRoute path="/saved-movies"
+              component={SavedMovies}
+              tokenCheck={tokenCheck}
+              setRoute={setRoute}
+              isButtonClicked={isButtonClicked}
+              headerButtonClicked={headerButtonClicked}
+              searchMovies={searchMovies}
+              setWords={setSearchWords}
+              setDemand={setDemand}
+              movies={movies}
+              demand={demand}
+              searchWords={searchWords}
+              buttonClick={onButtonClick}
+              array={array}
+              array2={array2}
+              likeMovie={likeMovie}
+              addingNewCards={addingNewCards}
+              shortMovies={shortMovies}
+              setShortMovies={setShortMovies}
+              width={width}
+              savedMovies={JSON.parse(localStorage.getItem("savedMovies"))}
+              route={route}
+              setMovies={setMovies}
+              buttonClick={onButtonClick}
+              loggedIn={loggedIn}
+              array3={array3}
+              trig={trig}
+              setTrig={setTrig}
+            />
+          <ProtectedRoute path="/profile"
+              component={Profile}
               isButtonClicked={isButtonClicked}
               setRoute={setRoute}
               route={route}
+              validity={validity}
+              validateField={validateField}
+              updateUser={handleUpdateUser}
+              signOut={signOut}
+              loggedIn={loggedIn}
             />
-          </Route>
           <Route path="/signup">
             <Register
               isButtonClicked={isButtonClicked}
               setRoute={setRoute}
-              route={route}
+              route="register"
               validity={validity}
               validateField={validateField}
+              register={register}
+              signUp={signUp}
+              registeredIn={registeredIn}
+              regError={err}
+              setError={setErr}
             />
           </Route>
           <Route path="/signin">
             <Login
+              signIn={signIn}
               isButtonClicked={isButtonClicked}
               setRoute={setRoute}
-              route={route}
+              route="login"
               validity={validity}
               validateField={validateField}
+              authorize={authorize}
             />
           </Route>
           <Route path="*">
             <Error404 />
           </Route>
         </Switch>
-        {width > 1100 && !headerButtonClicked ? 
-          <></> :
+        {width > 1100 && !headerButtonClicked ? (
+          <></>
+        ) : (
           <Navigation
-          isButtonClicked={isButtonClicked}
-          headerButtonClicked={headerButtonClicked}
-          route={route}
-        />}
-      {console.log(headerButtonClicked)}
+            isButtonClicked={isButtonClicked}
+            headerButtonClicked={headerButtonClicked}
+            route={route}
+          />
+        )}
+        <Preloader loading={loading} />
       </div>
-    </UserInfoContext.Provider>
+    </CurrentUserContext.Provider>
   );
 }
 
