@@ -18,9 +18,10 @@ function Movies(props) {
   }, []);
 
   React.useEffect(() => {
+    if (localStorage.getItem("movies")) {
     props.addingNewCards(window.innerWidth, JSON.parse(localStorage.getItem("movies")));
     props.setMovies(JSON.parse(localStorage.getItem("movies")));
-  }, [props.array3]);
+  }}, [props.array3]);
 
   React.useEffect(() => {
     props.setMovies(JSON.parse(localStorage.getItem("movies")))

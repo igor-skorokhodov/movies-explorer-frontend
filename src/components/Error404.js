@@ -7,7 +7,7 @@ function Error404() {
         <h1 className="error__header">404</h1>
         <h2 className="error__subheader">Страница не найдена</h2>
       </div>
-      <Link to="/main" className="error__link">
+      <Link to="/" className="error__link">
         Назад
       </Link>
     </section>

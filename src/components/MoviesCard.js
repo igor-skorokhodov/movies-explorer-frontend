@@ -20,11 +20,12 @@ function MoviesCard(props) {
   // Определяем, есть ли у карточки лайк, поставленный текущим пользователем
   const isInSaved = props.route === "savedMovies";
 
+  if(JSON.parse(localStorage.getItem('savedMovies'))) {
   JSON.parse(localStorage.getItem('savedMovies')).forEach(element => {
     if (props.card.id === element.movieId) {
       isLiked = true;
     };
-  });
+  });}
   // Создаём переменную, которую после зададим в `className` для кнопки лайка
   const cardLikeButtonClassName = `moviescard__heart ${
     isLiked ? "moviescard__heart_anabled" : ""

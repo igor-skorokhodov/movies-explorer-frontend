@@ -9,16 +9,17 @@ function SavedMovies(props) {
 
   React.useEffect(() => {
     props.setRoute('savedMovies')
+    if (JSON.parse(localStorage.getItem("savedMovies"))) {
     props.setMovies(JSON.parse(localStorage.getItem("savedMovies")));
     props.addingNewCards(window.innerWidth, JSON.parse(localStorage.getItem("savedMovies")));
-  }, [props.array3]);
+  }}, [props.array3]);
 
   React.useEffect(() => {
     props.setMovies(JSON.parse(localStorage.getItem("savedMovies")))
-    if (JSON.parse(localStorage.getItem("shortMovies")))
+    if (JSON.parse(localStorage.getItem("shortMovies"))) {
     props.setMovies(JSON.parse(localStorage.getItem("shortMovies")))
     props.addingNewCards(window.innerWidth, JSON.parse(localStorage.getItem("savedMovies")));
-  }, [props.trig]);
+  }}, [props.trig]);
 
   return (
     <>
